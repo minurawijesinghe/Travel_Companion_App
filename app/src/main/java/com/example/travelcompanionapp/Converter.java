@@ -1,70 +1,100 @@
 package com.example.travelcompanionapp;
 
 /**
- * Utility class providing conversion logic for Currency, Fuel/Distance, and Temperature.
- * All methods are static for easy access throughout the application.
+ * Converter class handles all unit conversions:
+ * - Currency
+ * - Fuel efficiency & distance
+ * - Temperature
  */
 public class Converter {
 
-    // --- Currency Conversion Constants (Base: USD) ---
+    // =======================
+    // Currency Conversion Rates (Fixed 2026)
+    // =======================
     private static final double USD_TO_AUD = 1.55;
     private static final double USD_TO_EUR = 0.92;
     private static final double USD_TO_JPY = 148.50;
     private static final double USD_TO_GBP = 0.78;
 
-    // --- Fuel and Distance Conversion Constants ---
-    private static final double MPG_TO_KML_FACTOR = 0.425144;
-    private static final double GALLON_TO_LITER_FACTOR = 3.78541;
+    // =======================
+    // Fuel & Distance Conversion Factors
+    // =======================
+    private static final double MPG_TO_KML_FACTOR = 0.425;
+    private static final double GALLON_TO_LITER_FACTOR = 3.785;
     private static final double NAUTICAL_MILE_TO_KM_FACTOR = 1.852;
 
-    // --- Temperature Constants ---
+    // =======================
+    // Temperature Constants
+    // =======================
     private static final double TEMP_OFFSET_KELVIN = 273.15;
     private static final double TEMP_SCALE_FAHRENHEIT = 1.8;
     private static final double TEMP_OFFSET_FAHRENHEIT = 32.0;
 
     /**
-     * Converts an amount from one currency to another using USD as an intermediate base.
+     * Converts currency using USD as an intermediate base.
      *
-     * @param amount The value to convert.
-     * @param from   The source currency code (e.g., "USD", "AUD", "EUR", "JPY", "GBP").
-     * @param to     The target currency code.
-     * @return The converted amount.
+     * @param amount value to convert
+     * @param from   source currency (e.g., "AUD")
+     * @param to     target currency (e.g., "USD")
+     * @return converted value
      */
     public static double convertCurrency(double amount, String from, String to) {
+
+        // If both units are the same, return original value
         if (from.equals(to)) return amount;
 
-        // Step 1: Convert source currency to USD (Base)
+        // Step 1: Convert input currency to USD
         double inUSD;
         switch (from) {
-            case "AUD": inUSD = amount / USD_TO_AUD; break;
-            case "EUR": inUSD = amount / USD_TO_EUR; break;
-            case "JPY": inUSD = amount / USD_TO_JPY; break;
-            case "GBP": inUSD = amount / USD_TO_GBP; break;
-            default:    inUSD = amount; // Assume USD if not matched
+            case "AUD":
+                inUSD = amount / USD_TO_AUD;
+                break;
+            case "EUR":
+                inUSD = amount / USD_TO_EUR;
+                break;
+            case "JPY":
+                inUSD = amount / USD_TO_JPY;
+                break;
+            case "GBP":
+                inUSD = amount / USD_TO_GBP;
+                break;
+            default:
+                // If already USD
+                inUSD = amount;
         }
 
         // Step 2: Convert USD to target currency
         switch (to) {
-            case "AUD": return inUSD * USD_TO_AUD;
-            case "EUR": return inUSD * USD_TO_EUR;
-            case "JPY": return inUSD * USD_TO_JPY;
-            case "GBP": return inUSD * USD_TO_GBP;
-            default:    return inUSD; // Assume USD if not matched
+            case "AUD":
+                return inUSD * USD_TO_AUD;
+            case "EUR":
+                return inUSD * USD_TO_EUR;
+            case "JPY":
+                return inUSD * USD_TO_JPY;
+            case "GBP":
+                return inUSD * USD_TO_GBP;
+            default:
+                // If target is USD
+                return inUSD;
         }
     }
 
     /**
-     * Handles specific conversions for Fuel Efficiency, Volume, and Distance.
+     * Converts fuel efficiency, volume, and distance units.
      *
-     * @param value The value to convert.
-     * @param from  The source unit description.
-     * @param to    The target unit description.
-     * @return The converted value, or -1.0 if the units are incompatible or unknown.
+     * @param value input value
+     * @param from  source unit
+     * @param to    target unit
+     * @return converted value or -1.0 if unsupported conversion
      */
     public static double convertFuelOrDistance(double value, String from, String to) {
+
+        // If both units are the same, return original value
         if (from.equals(to)) return value;
 
-        // Fuel Efficiency: MPG <-> km/L
+        // =======================
+        // Fuel Efficiency Conversion
+        // =======================
         if (from.equals("Miles per Gallon (mpg)") && to.equals("Kilometers per Liter (km/L)")) {
             return value * MPG_TO_KML_FACTOR;
         }
@@ -72,7 +102,9 @@ public class Converter {
             return value / MPG_TO_KML_FACTOR;
         }
 
-        // Volume: Gallon <-> Liter
+        // =======================
+        // Volume Conversion
+        // =======================
         if (from.equals("Gallon (US)") && to.equals("Liter")) {
             return value * GALLON_TO_LITER_FACTOR;
         }
@@ -80,7 +112,9 @@ public class Converter {
             return value / GALLON_TO_LITER_FACTOR;
         }
 
-        // Distance: Nautical Mile <-> Kilometer
+        // =======================
+        // Distance Conversion
+        // =======================
         if (from.equals("Nautical Mile") && to.equals("Kilometer")) {
             return value * NAUTICAL_MILE_TO_KM_FACTOR;
         }
@@ -88,21 +122,25 @@ public class Converter {
             return value / NAUTICAL_MILE_TO_KM_FACTOR;
         }
 
-        return -1.0; // Indicates incompatible units
+        // Return -1 if conversion is not supported
+        return -1.0;
     }
 
     /**
      * Converts temperature between Celsius, Fahrenheit, and Kelvin.
+     * Uses Celsius as an intermediate base.
      *
-     * @param value The temperature value.
-     * @param from  The source unit ("Celsius", "Fahrenheit", "Kelvin").
-     * @param to    The target unit.
-     * @return The converted temperature.
+     * @param value input temperature
+     * @param from  source unit
+     * @param to    target unit
+     * @return converted temperature
      */
     public static double convertTemperature(double value, String from, String to) {
+
+        // If both units are the same, return original value
         if (from.equals(to)) return value;
 
-        // Step 1: Normalize source to Celsius
+        // Step 1: Convert input temperature to Celsius
         double celsius;
         switch (from) {
             case "Fahrenheit":
@@ -112,8 +150,8 @@ public class Converter {
                 celsius = value - TEMP_OFFSET_KELVIN;
                 break;
             default:
-                celsius = value; // Already Celsius
-                break;
+                // Assume input is already Celsius
+                celsius = value;
         }
 
         // Step 2: Convert Celsius to target unit
@@ -123,6 +161,7 @@ public class Converter {
             case "Kelvin":
                 return celsius + TEMP_OFFSET_KELVIN;
             default:
+                // Return Celsius if target is Celsius
                 return celsius;
         }
     }

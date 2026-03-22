@@ -16,13 +16,20 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.Locale;
 
 /**
- * Main Activity for the Travel Companion App.
- * Handles user interactions for converting currency, fuel efficiency, distance, and temperature.
+ * MainActivity handles user interaction for the Travel Companion app.
+ * It manages:
+ * - category selection
+ * - unit spinner updates
+ * - input validation
+ * - conversion requests
+ * - result display
  */
 public class MainActivity extends AppCompatActivity {
 
-    // UI Components
-    private Spinner spinnerCategory, spinnerFrom, spinnerTo;
+    // UI components
+    private Spinner spinnerCategory;
+    private Spinner spinnerFrom;
+    private Spinner spinnerTo;
     private TextInputEditText etInput;
     private TextView tvResult;
 
@@ -31,29 +38,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeViews();
-        setupListeners();
-    }
-
-    /**
-     * Finds and initializes all UI components from the layout.
-     */
-    private void initializeViews() {
+        // Link Java variables with XML views
         spinnerCategory = findViewById(R.id.spinnerCategory);
         spinnerFrom = findViewById(R.id.spinnerFrom);
         spinnerTo = findViewById(R.id.spinnerTo);
         etInput = findViewById(R.id.etInput);
         tvResult = findViewById(R.id.tvResult);
-    }
 
-    /**
-     * Sets up click and selection listeners for the UI components.
-     */
-    private void setupListeners() {
         Button btnConvert = findViewById(R.id.btnConvert);
         Button btnReset = findViewById(R.id.btnReset);
 
-        // Update units when the category selection changes
+        // Update source and destination unit spinners when category changes
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -66,120 +61,130 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Handle conversion button click
+        // Perform conversion when Convert button is clicked
         btnConvert.setOnClickListener(v -> performConversion());
 
-        // Handle reset button click
+        // Reset all fields when Reset button is clicked
         btnReset.setOnClickListener(v -> resetFields());
     }
 
     /**
-     * Updates the 'From' and 'To' spinners based on the selected category.
+     * Updates the "from" and "to" spinners based on the selected category.
      *
-     * @param categoryPosition The index of the selected category.
+     * @param categoryPosition selected category index
      */
     private void updateUnitSpinners(int categoryPosition) {
         int unitArrayId;
-        
-        // Map category position to the appropriate string array resource
+
+        // Choose the correct unit list based on selected category
         switch (categoryPosition) {
-            case 1: // Fuel & Distance
+            case 1:
                 unitArrayId = R.array.fuel_distance_units;
                 break;
-            case 2: // Temperature
+            case 2:
                 unitArrayId = R.array.temperature_units;
                 break;
-            default: // Currency (default)
+            default:
                 unitArrayId = R.array.currency_units;
                 break;
         }
 
-        // Create and set the adapter for both unit spinners
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                unitArrayId, android.R.layout.simple_spinner_item);
+        // Create adapter from string-array resource
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                unitArrayId,
+                android.R.layout.simple_spinner_item
+        );
+
+        // Set dropdown layout style
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        // Apply the same adapter to both spinners
         spinnerFrom.setAdapter(adapter);
         spinnerTo.setAdapter(adapter);
 
-        // Reset result display when category changes
+        // Reset displayed result whenever category changes
         tvResult.setText(getString(R.string.default_result));
     }
 
     /**
-     * Validates input and performs the conversion using the Converter utility class.
+     * Reads user input, validates it, performs the selected conversion,
+     * and displays the formatted result.
      */
     private void performConversion() {
-        String inputStr = etInput.getText() != null ? etInput.getText().toString().trim() : "";
+        // Safely get user input and remove leading/trailing spaces
+        String inputStr = etInput.getText() != null
+                ? etInput.getText().toString().trim()
+                : "";
 
-        // 1. Validation: Check if input is empty
+        // Check if input is empty
         if (inputStr.isEmpty()) {
-            showToast(R.string.error_empty);
+            Toast.makeText(this, R.string.error_empty, Toast.LENGTH_SHORT).show();
             return;
         }
 
         try {
+            // Parse numeric input
             double inputValue = Double.parseDouble(inputStr);
+
+            // Read selected category and units
             int categoryPos = spinnerCategory.getSelectedItemPosition();
             String fromUnit = spinnerFrom.getSelectedItem().toString();
             String toUnit = spinnerTo.getSelectedItem().toString();
 
-            // 2. Validation: Identity Conversion (Same units selected)
+            // If both selected units are the same, return original value
             if (fromUnit.equals(toUnit)) {
-                showToast(R.string.warn_identity_conversion);
+                Toast.makeText(this, R.string.warn_identity_conversion, Toast.LENGTH_SHORT).show();
                 tvResult.setText(String.format(Locale.getDefault(), "%.2f", inputValue));
                 return;
             }
 
-            // 3. Validation: Prevent negative values for non-temperature conversions
+            // Reject negative values for non-temperature categories
             if (categoryPos != 2 && inputValue < 0) {
-                showToast(R.string.error_negative);
+                Toast.makeText(this, R.string.error_negative, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             double result = 0;
 
-            // 4. Routing: Call appropriate conversion logic based on category
+            // Call the correct conversion method based on category
             switch (categoryPos) {
-                case 0: // Currency
+                case 0:
                     result = Converter.convertCurrency(inputValue, fromUnit, toUnit);
                     break;
-                case 1: // Fuel/Distance
+
+                case 1:
                     result = Converter.convertFuelOrDistance(inputValue, fromUnit, toUnit);
+
+                    // Handle unsupported fuel/distance conversions
                     if (result == -1) {
-                        showToast(R.string.error_incompatible);
+                        Toast.makeText(this, R.string.error_incompatible, Toast.LENGTH_SHORT).show();
                         return;
                     }
                     break;
-                case 2: // Temperature
+
+                case 2:
                     result = Converter.convertTemperature(inputValue, fromUnit, toUnit);
                     break;
             }
 
-            // 5. Display Result: Format to 2 decimal places
+            // Display result rounded to 2 decimal places
             tvResult.setText(String.format(Locale.getDefault(), "%.2f", result));
 
         } catch (NumberFormatException e) {
-            showToast(R.string.error_invalid);
+            // Handle invalid numeric input
+            Toast.makeText(this, R.string.error_invalid, Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * Resets all input fields and selections to their default states.
+     * Clears input, resets category spinner to default,
+     * and restores the default result text.
      */
     private void resetFields() {
         etInput.setText("");
         tvResult.setText(getString(R.string.default_result));
         spinnerCategory.setSelection(0);
-        showToast(R.string.reset_msg);
-    }
-
-    /**
-     * Utility method to show a short toast message.
-     *
-     * @param resId The resource ID of the string to display.
-     */
-    private void showToast(int resId) {
-        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.reset_msg, Toast.LENGTH_SHORT).show();
     }
 }
