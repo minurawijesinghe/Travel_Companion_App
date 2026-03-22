@@ -1,82 +1,129 @@
 package com.example.travelcompanionapp;
 
-// This class has all the math for the conversions
+/**
+ * Utility class providing conversion logic for Currency, Fuel/Distance, and Temperature.
+ * All methods are static for easy access throughout the application.
+ */
 public class Converter {
 
-    // Conversion rates for currency (USD is the base)
+    // --- Currency Conversion Constants (Base: USD) ---
     private static final double USD_TO_AUD = 1.55;
     private static final double USD_TO_EUR = 0.92;
     private static final double USD_TO_JPY = 148.50;
     private static final double USD_TO_GBP = 0.78;
 
-    // Currency conversion method
+    // --- Fuel and Distance Conversion Constants ---
+    private static final double MPG_TO_KML_FACTOR = 0.425144;
+    private static final double GALLON_TO_LITER_FACTOR = 3.78541;
+    private static final double NAUTICAL_MILE_TO_KM_FACTOR = 1.852;
+
+    // --- Temperature Constants ---
+    private static final double TEMP_OFFSET_KELVIN = 273.15;
+    private static final double TEMP_SCALE_FAHRENHEIT = 1.8;
+    private static final double TEMP_OFFSET_FAHRENHEIT = 32.0;
+
+    /**
+     * Converts an amount from one currency to another using USD as an intermediate base.
+     *
+     * @param amount The value to convert.
+     * @param from   The source currency code (e.g., "USD", "AUD", "EUR", "JPY", "GBP").
+     * @param to     The target currency code.
+     * @return The converted amount.
+     */
     public static double convertCurrency(double amount, String from, String to) {
         if (from.equals(to)) return amount;
 
-        // Convert the input amount to USD first
+        // Step 1: Convert source currency to USD (Base)
         double inUSD;
-        if (from.equals("AUD")) {
-            inUSD = amount / USD_TO_AUD;
-        } else if (from.equals("EUR")) {
-            inUSD = amount / USD_TO_EUR;
-        } else if (from.equals("JPY")) {
-            inUSD = amount / USD_TO_JPY;
-        } else if (from.equals("GBP")) {
-            inUSD = amount / USD_TO_GBP;
-        } else {
-            inUSD = amount; // It's already USD
+        switch (from) {
+            case "AUD": inUSD = amount / USD_TO_AUD; break;
+            case "EUR": inUSD = amount / USD_TO_EUR; break;
+            case "JPY": inUSD = amount / USD_TO_JPY; break;
+            case "GBP": inUSD = amount / USD_TO_GBP; break;
+            default:    inUSD = amount; // Assume USD if not matched
         }
 
-        // Then convert from USD to the target currency
-        if (to.equals("AUD")) return inUSD * USD_TO_AUD;
-        if (to.equals("EUR")) return inUSD * USD_TO_EUR;
-        if (to.equals("JPY")) return inUSD * USD_TO_JPY;
-        if (to.equals("GBP")) return inUSD * USD_TO_GBP;
-        
-        return inUSD;
+        // Step 2: Convert USD to target currency
+        switch (to) {
+            case "AUD": return inUSD * USD_TO_AUD;
+            case "EUR": return inUSD * USD_TO_EUR;
+            case "JPY": return inUSD * USD_TO_JPY;
+            case "GBP": return inUSD * USD_TO_GBP;
+            default:    return inUSD; // Assume USD if not matched
+        }
     }
 
-    // Distance and Fuel logic
+    /**
+     * Handles specific conversions for Fuel Efficiency, Volume, and Distance.
+     *
+     * @param value The value to convert.
+     * @param from  The source unit description.
+     * @param to    The target unit description.
+     * @return The converted value, or -1.0 if the units are incompatible or unknown.
+     */
     public static double convertFuelOrDistance(double value, String from, String to) {
         if (from.equals(to)) return value;
 
-        // Fuel Efficiency
+        // Fuel Efficiency: MPG <-> km/L
         if (from.equals("Miles per Gallon (mpg)") && to.equals("Kilometers per Liter (km/L)")) {
-            return value * 0.425;
-        } 
+            return value * MPG_TO_KML_FACTOR;
+        }
         if (from.equals("Kilometers per Liter (km/L)") && to.equals("Miles per Gallon (mpg)")) {
-            return value / 0.425;
+            return value / MPG_TO_KML_FACTOR;
         }
 
-        // Volume logic
-        if (from.equals("Gallon (US)") && to.equals("Liter")) return value * 3.785;
-        if (from.equals("Liter") && to.equals("Gallon (US)")) return value / 3.785;
+        // Volume: Gallon <-> Liter
+        if (from.equals("Gallon (US)") && to.equals("Liter")) {
+            return value * GALLON_TO_LITER_FACTOR;
+        }
+        if (from.equals("Liter") && to.equals("Gallon (US)")) {
+            return value / GALLON_TO_LITER_FACTOR;
+        }
 
-        // Distance logic
-        if (from.equals("Nautical Mile") && to.equals("Kilometer")) return value * 1.852;
-        if (from.equals("Kilometer") && to.equals("Nautical Mile")) return value / 1.852;
+        // Distance: Nautical Mile <-> Kilometer
+        if (from.equals("Nautical Mile") && to.equals("Kilometer")) {
+            return value * NAUTICAL_MILE_TO_KM_FACTOR;
+        }
+        if (from.equals("Kilometer") && to.equals("Nautical Mile")) {
+            return value / NAUTICAL_MILE_TO_KM_FACTOR;
+        }
 
-        return -1; // Wrong units
+        return -1.0; // Indicates incompatible units
     }
 
-    // Temperature logic
+    /**
+     * Converts temperature between Celsius, Fahrenheit, and Kelvin.
+     *
+     * @param value The temperature value.
+     * @param from  The source unit ("Celsius", "Fahrenheit", "Kelvin").
+     * @param to    The target unit.
+     * @return The converted temperature.
+     */
     public static double convertTemperature(double value, String from, String to) {
         if (from.equals(to)) return value;
 
+        // Step 1: Normalize source to Celsius
         double celsius;
-        // Turn everything into Celsius first
-        if (from.equals("Fahrenheit")) {
-            celsius = (value - 32) / 1.8;
-        } else if (from.equals("Kelvin")) {
-            celsius = value - 273.15;
-        } else {
-            celsius = value;
+        switch (from) {
+            case "Fahrenheit":
+                celsius = (value - TEMP_OFFSET_FAHRENHEIT) / TEMP_SCALE_FAHRENHEIT;
+                break;
+            case "Kelvin":
+                celsius = value - TEMP_OFFSET_KELVIN;
+                break;
+            default:
+                celsius = value; // Already Celsius
+                break;
         }
 
-        // Convert Celsius to the final unit
-        if (to.equals("Fahrenheit")) return (celsius * 1.8) + 32;
-        if (to.equals("Kelvin")) return celsius + 273.15;
-        
-        return celsius;
+        // Step 2: Convert Celsius to target unit
+        switch (to) {
+            case "Fahrenheit":
+                return (celsius * TEMP_SCALE_FAHRENHEIT) + TEMP_OFFSET_FAHRENHEIT;
+            case "Kelvin":
+                return celsius + TEMP_OFFSET_KELVIN;
+            default:
+                return celsius;
+        }
     }
 }

@@ -44,9 +44,10 @@
         <item>Kelvin</item>
     </string-array>
 
-    <!-- Error Messages -->
+    <!-- Error/Warning Messages -->
     <string name="error_empty">Please enter a value</string>
     <string name="error_invalid">Invalid input</string>
     <string name="error_negative">Negative values not allowed here</string>
     <string name="error_incompatible">Incompatible units selected</string>
+    <string name="warn_identity_conversion">Same units selected. No conversion needed.</string>
 </resources>
