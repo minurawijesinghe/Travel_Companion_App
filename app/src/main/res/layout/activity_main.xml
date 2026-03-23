@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- Root layout using CoordinatorLayout for flexible UI positioning -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,263 +8,274 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
-    <!-- Decorative header background (top section styling) -->
+    <!-- Decorative top header -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="220dp"
         android:background="@drawable/header_background" />
 
-    <!-- ScrollView ensures UI is scrollable on smaller screens -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:scrollbars="none">
 
-        <!-- Main vertical container for all UI components -->
+        <!-- Outer container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
 
-            <!-- App Title -->
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
+            <!-- Inner content wrapper for better large-screen appearance -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="48dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/title_text"
-                android:textColor="@color/white"
-                android:textSize="34sp"
-                android:textStyle="bold"
-                android:shadowColor="#40000000"
-                android:shadowDx="2"
-                android:shadowDy="2"
-                android:shadowRadius="4"/>
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-            <!-- =======================
-                 INPUT CARD (User Controls)
-                 ======================= -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="8dp"
-                app:cardUseCompatPadding="true">
+                <!-- App title -->
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    android:text="@string/title_text"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#40000000"
+                    android:shadowDx="1.5"
+                    android:shadowDy="1.5"
+                    android:shadowRadius="3" />
 
-                <!-- Container inside card -->
-                <LinearLayout
+                <!-- Input card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp">
+                    android:layout_marginTop="4dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:cardUseCompatPadding="true">
 
-                    <!-- Category Label -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/category_label"
-                        android:textColor="@color/primary"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.05"/>
-
-                    <!-- Category Selection Spinner -->
-                    <Spinner
-                        android:id="@+id/spinnerCategory"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
-                        android:entries="@array/categories"
-                        android:spinnerMode="dropdown"
-                        android:background="@drawable/spinner_background"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="40dp" />
-
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:background="@color/divider" />
-
-                    <!-- FROM and TO unit selectors -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="20dp">
 
-                        <!-- FROM section -->
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <!-- Category label -->
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:text="@string/category_label"
+                            android:textAllCaps="true"
+                            android:textColor="@color/primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/from_label"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:textStyle="bold"/>
-
-                            <Spinner
-                                android:id="@+id/spinnerFrom"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:layout_marginTop="6dp"
-                                android:spinnerMode="dropdown"
-                                android:background="@drawable/spinner_background"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="32dp"/>
-                        </LinearLayout>
-
-                        <!-- Arrow icon between spinners -->
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="bottom"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginHorizontal="12dp"
-                            android:src="@android:drawable/ic_menu_send"
-                            app:tint="@color/secondary"
-                            tools:ignore="ContentDescription" />
-
-                        <!-- TO section -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/to_label"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:textStyle="bold"/>
-
-                            <Spinner
-                                android:id="@+id/spinnerTo"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:layout_marginTop="6dp"
-                                android:spinnerMode="dropdown"
-                                android:background="@drawable/spinner_background"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="32dp"/>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Input field (Material Design TextInputLayout) -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="28dp"
-                        android:hint="@string/input_hint"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/primary"
-                        app:hintTextColor="@color/primary"
-                        app:startIconDrawable="@android:drawable/ic_menu_edit"
-                        app:startIconTint="@color/primary">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etInput"
+                        <!-- Category spinner -->
+                        <Spinner
+                            android:id="@+id/spinnerCategory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="numberDecimal|numberSigned"
-                            android:textSize="18sp"
-                            android:textColor="@color/text_primary" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:minHeight="52dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/spinner_background"
+                            android:entries="@array/categories"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="40dp"
+                            android:spinnerMode="dropdown" />
 
-                    <!-- Buttons (Reset & Convert) -->
+                        <!-- Divider -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:background="@color/divider" />
+
+                        <!-- From and To unit selectors -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <!-- From section -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/from_label"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerFrom"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:minHeight="48dp"
+                                    android:layout_marginTop="6dp"
+                                    android:background="@drawable/spinner_background"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="32dp"
+                                    android:spinnerMode="dropdown" />
+                            </LinearLayout>
+
+                            <!-- Conversion icon -->
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="10dp"
+                                android:contentDescription="@string/convert_button"
+                                android:src="@android:drawable/ic_menu_send"
+                                app:tint="@color/secondary" />
+
+                            <!-- To section -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/to_label"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerTo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:minHeight="48dp"
+                                    android:layout_marginTop="6dp"
+                                    android:background="@drawable/spinner_background"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="32dp"
+                                    android:spinnerMode="dropdown" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Input field -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:hint="@string/input_hint"
+                            app:boxStrokeColor="@color/primary"
+                            app:hintTextColor="@color/primary"
+                            app:startIconDrawable="@android:drawable/ic_menu_edit"
+                            app:startIconTint="@color/primary">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etInput"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="numberDecimal|numberSigned"
+                                android:textColor="@color/text_primary"
+                                android:textSize="17sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="28dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btnReset"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:minHeight="52dp"
+                                android:layout_weight="1"
+                                android:text="@string/reset_button"
+                                android:textColor="@color/secondary"
+                                app:cornerRadius="12dp"
+                                app:strokeColor="@color/secondary" />
+
+                            <Button
+                                android:id="@+id/btnConvert"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:minHeight="52dp"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/primary"
+                                android:text="@string/convert_button"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:cornerRadius="12dp"
+                                app:elevation="4dp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Result card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:cardUseCompatPadding="true">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
-                        android:orientation="horizontal">
+                        android:background="#080D47A1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="24dp">
 
-                        <!-- Reset Button -->
-                        <Button
-                            android:id="@+id/btnReset"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="56dp"
-                            android:layout_weight="1"
-                            android:text="@string/reset_button"
-                            android:textColor="@color/secondary"
-                            app:cornerRadius="12dp"
-                            app:strokeColor="@color/secondary" />
-
-                        <!-- Convert Button -->
-                        <Button
-                            android:id="@+id/btnConvert"
-                            android:layout_width="0dp"
-                            android:layout_height="56dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_weight="2"
-                            android:backgroundTint="@color/primary"
-                            android:text="@string/convert_button"
-                            android:textColor="@color/white"
+                            android:layout_height="wrap_content"
+                            android:text="@string/result_label"
+                            android:textAllCaps="true"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
                             android:textStyle="bold"
-                            app:cornerRadius="12dp"
-                            app:elevation="4dp" />
+                            android:letterSpacing="0.08" />
+
+                        <TextView
+                            android:id="@+id/tvResult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:text="@string/default_result"
+                            android:textColor="@color/primary_dark"
+                            android:textSize="36sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- =======================
-                 RESULT CARD (Output Display)
-                 ======================= -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="28dp"
-                    android:background="#080D47A1">
-
-                    <!-- Result Label -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/result_label"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.1"
-                        android:textStyle="bold"/>
-
-                    <!-- Result Value -->
-                    <TextView
-                        android:id="@+id/tvResult"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/default_result"
-                        android:textColor="@color/primary_dark"
-                        android:textSize="44sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
